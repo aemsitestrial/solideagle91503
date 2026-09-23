@@ -24,7 +24,7 @@ function getFallbackArticle(block) {
 export default async function decorate(block) {
   const aempublishurl = getAEMPublish();
   const aemauthorurl = getAEMAuthor();
-  const persistedquery = '/graphql/execute.json/tcs/ArticleByPath';
+  const persistedquery = '/graphql/execute.json/aem-boilerplate-frescopa/ArticleByPath';
   const sourceLink = block.querySelector('a[href]');
   const rawArticlePath = sourceLink
     ? new URL(sourceLink.href, window.location.origin).pathname
