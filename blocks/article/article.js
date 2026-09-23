@@ -45,11 +45,7 @@ export default async function decorate(block) {
     return;
   }
 
-  const baseUrl = window.location
-    && window.location.origin
-    && window.location.origin.includes('author')
-    ? aemauthorurl
-    : aempublishurl;
+  const baseUrl = 'https://author-p153710-e1614654.adobeaemcloud.com/';
 
   const url = `${baseUrl}${persistedquery};path=${encodeURIComponent(articlepath)};variation=${encodeURIComponent(variationname)};ts=${Date.now()}`;
 
