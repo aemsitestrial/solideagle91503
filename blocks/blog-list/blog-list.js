@@ -30,7 +30,7 @@ export default async function decorate(block) {
   const container = document.createElement('ul');
 
   try {
-    const indexResponse = await fetch('/../sitemap.json');
+    const indexResponse = await fetch('/../query-index.json');
     if (indexResponse.ok) {
       const index = await indexResponse.json();
       const posts = Array.isArray(index?.data)
