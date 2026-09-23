@@ -38,8 +38,8 @@ export default async function decorate(block) {
     block.innerHTML = `
       <div class='article-content' data-aue-type='text'>
         <div>
-          <h4 class='headline'>${escapeHtml(fallback.title)}</h4>
-          <p class='detail'>${escapeHtml(fallback.content.plaintext)}</p>
+          <h4 class='title'>${escapeHtml(fallback.title)}</h4>
+          <p class='content'>${escapeHtml(fallback.content.plaintext)}</p>
         </div>
       </div>
     `;
@@ -68,13 +68,13 @@ export default async function decorate(block) {
     // Gracefully fall back to authored content if the endpoint is unavailable.
   }
 
-  const itemId = `urn:aemconnection:${encodeURIComponent(articlepath)}/jcr:content/data/master`;
+  const itemId = `urn:aemconnection:${encodeURIComponent(articlepath)}/jcr:content/data/${variationname}`;
 
   block.innerHTML = `
     <div class='article-content' data-aue-resource="${itemId}" data-aue-label="article content fragment" data-aue-type="reference" data-aue-filter="cf">
       <div>
-        <h4 data-aue-prop="headline" data-aue-label="headline" data-aue-type="text" class='headline'>${escapeHtml(cfReq.title || 'Article')}</h4>
-        <p data-aue-prop="detail" data-aue-label="detail" data-aue-type="richtext" class='detail'>${escapeHtml(cfReq.content?.plaintext || cfReq.content || 'Article content is available in the authored document.')}</p>
+        <h4 data-aue-prop="title" data-aue-label="title" data-aue-type="text" class='title'>${escapeHtml(cfReq.title || 'Article')}</h4>
+        <p data-aue-prop="content" data-aue-label="content" data-aue-type="richtext" class='content'>${escapeHtml(cfReq.content?.plaintext || cfReq.content || 'Article content is available in the authored document.')}</p>
       </div>
     </div>
   `;
