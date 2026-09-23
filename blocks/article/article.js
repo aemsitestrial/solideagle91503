@@ -29,9 +29,9 @@ export default async function decorate(block) {
   const rawArticlePath = sourceLink
     ? new URL(sourceLink.href, window.location.origin).pathname
     : '';
-  const articlepath = (rawArticlePath || block.dataset?.path || '').replace('.html', '');
-  const variationname = block.querySelector(':scope div:nth-child(2) > div') ?.textContent?.trim() || 'main';
- 
+  const articlepath = rawArticlePath || block.dataset?.path || '';
+  const variationname = block.querySelector(':scope div:nth-child(2) > div')?.textContent?.trim() || 'main';
+
   if (!articlepath || (!aempublishurl && !aemauthorurl)) {
     const fallback = getFallbackArticle(block);
     block.innerHTML = `
