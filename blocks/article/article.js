@@ -45,7 +45,11 @@ export default async function decorate(block) {
     return;
   }
 
-  const baseUrl = 'https://author-p153710-e1614654.adobeaemcloud.com/';
+  const baseUrl = window.location
+    && window.location.origin
+    && window.location.origin.includes('author')
+    ? aemauthorurl
+    : aempublishurl;
 
   const url = `${baseUrl}${persistedquery};path=${encodeURIComponent(articlepath)};variation=${encodeURIComponent(variationname)};ts=${Date.now()}`;
 
@@ -53,14 +57,13 @@ export default async function decorate(block) {
 
   try {
     const response = await fetch(url, { credentials: 'include' });
+
     if (response.ok) {
       const contentfragment = await response.json();
-      if (contentfragment?.data?.articleByPath?.item) {
-        cfReq = contentfragment.data.articleByPath.item;
-      }
+      cfReq = contentfragment?.data?.articleByPath?.item || cfReq;
     }
   } catch (error) {
-    // Gracefully fall back to authored content if the endpoint is unavailable.
+    cfReq = getFallbackArticle(block);
   }
 
   const itemId = `urn:aemconnection:${encodeURIComponent(articlepath)}/jcr:content/data/${variationname}`;
