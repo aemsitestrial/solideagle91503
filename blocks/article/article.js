@@ -56,14 +56,30 @@ export default async function decorate(block) {
   let cfReq = getFallbackArticle(block);
 
   try {
-    const response = await fetch(url, { credentials: 'include' });
+    console.log('Article Path:', articlepath);
+    console.log('Variation:', variationname);
+    console.log('Fetch URL:', url);
 
-    if (response.ok) {
-      const contentfragment = await response.json();
-      cfReq = contentfragment?.data?.articleByPath?.item || cfReq;
+    const response = await fetch(url, {
+      credentials: 'include',
+    });
+
+    console.log('Response Status:', response.status);
+
+    const contentfragment = await response.json();
+
+    console.log('GraphQL Response:', contentfragment);
+
+    const item = contentfragment?.data?.articleByPath?.item;
+
+    if (item) {
+      cfReq = item;
+      console.log('CF Item:', cfReq);
+    } else {
+      console.warn('No item returned from GraphQL');
     }
   } catch (error) {
-    cfReq = getFallbackArticle(block);
+    console.error('Content Fragment Fetch Error:', error);
   }
 
   const itemId = `urn:aemconnection:${encodeURIComponent(articlepath)}/jcr:content/data/${variationname}`;
