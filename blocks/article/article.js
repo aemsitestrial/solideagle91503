@@ -51,7 +51,7 @@ export default async function decorate(block) {
     ? aemauthorurl
     : aempublishurl;
 
-  const url = `${baseUrl}${persistedquery};path=${encodeURIComponent(articlepath)};variation=${encodeURIComponent(variationname)};ts=${Date.now()}`;
+  const url = `${baseUrl}${persistedquery};path=${articlepath};variation=${variationname};ts=${Date.now()}`;
 
   let cfReq = getFallbackArticle(block);
 
@@ -70,7 +70,7 @@ export default async function decorate(block) {
 
     console.log('GraphQL Response:', contentfragment);
 
-    const item = contentfragment?.data?.articleByPath?.item;
+    const item = contentfragment?.data?.ArticleByPath?.item;
 
     if (item) {
       cfReq = item;
@@ -82,7 +82,7 @@ export default async function decorate(block) {
     console.error('Content Fragment Fetch Error:', error);
   }
 
-  const itemId = `urn:aemconnection:${encodeURIComponent(articlepath)}/jcr:content/data/${variationname}`;
+  const itemId = `urn:aemconnection:${articlepath}/jcr:content/data/${variationname}`;
 
   block.innerHTML = `
     <div class='article-content' data-aue-resource="${itemId}" data-aue-label="article content fragment" data-aue-type="reference" data-aue-filter="cf">
