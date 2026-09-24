@@ -29,7 +29,7 @@ export default async function decorate(block) {
   const rawArticlePath = sourceLink
     ? new URL(sourceLink.href, window.location.origin).pathname
     : '';
-  const articlepath = rawArticlePath || block.dataset?.path || '';
+  const articlepath = (rawArticlePath || block.dataset?.path || '').replace(/\.html$/, '');
   const variationname = block.querySelector(':scope div:nth-child(2) > div')?.textContent?.trim() || 'main';
 
   if (!articlepath || (!aempublishurl && !aemauthorurl)) {
@@ -70,7 +70,7 @@ export default async function decorate(block) {
 
     console.log('GraphQL Response:', contentfragment);
 
-    const item = contentfragment?.data?.ArticleByPath?.item;
+    const item = contentfragment?.data?.articleByPath?.item;
 
     if (item) {
       cfReq = item;
