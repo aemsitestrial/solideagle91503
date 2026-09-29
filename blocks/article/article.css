@@ -112,50 +112,6 @@
   font-size: 0.95rem;
 }
 
-/* ==========================================
-   FEATURED VARIATION
-   ========================================== */
-
-.article .article-content.featured {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 450px;
-  padding: 80px 60px;
-  text-align: center;
-}
-
-.article .article-content.featured .article-wrapper {
-  max-width: 900px;
-}
-
-.article .article-content.featured .featured-image {
-  max-width: 800px;
-  margin: 0 auto 32px;
-}
-
-.article .article-content.featured .featured-image img {
-  max-height: 450px;
-  width: 100%;
-  object-fit: cover;
-}
-
-.article .article-content.featured .title {
-  margin-bottom: 24px;
-  font-size: 3rem;
-}
-
-.article .article-content.featured .article-meta {
-  justify-content: center;
-  margin-bottom: 24px;
-}
-
-.article .article-content.featured .content {
-  max-width: 800px;
-  margin: 0 auto;
-  font-size: 1.15rem;
-}
-
 .article .article-content.left {
   text-align: left;
 }
@@ -517,18 +473,6 @@
     font-size: 2rem;
   }
 
-  .article .article-content.featured {
-    padding: 60px 40px;
-  }
-
-  .article .article-content.featured .title {
-    font-size: 2.4rem;
-  }
-
-  .article .article-content.featured .featured-image img {
-    max-height: 360px;
-  }
-
   .article .article-content.split:where(.has-image) .article-wrapper,
   .article .article-content.spotlight:where(.has-image) .article-wrapper {
     grid-template-columns: 1fr;
@@ -572,18 +516,8 @@
     font-size: 1.5rem;
   }
 
-  .article .article-content.featured {
-    min-height: auto;
-    padding: 40px 24px;
-  }
-
-  .article .article-content.featured .title {
-    font-size: 2rem;
-  }
-
   .article .article-content.main .content,
-  .article .article-content.summary .content,
-  .article .article-content.featured .content {
+  .article .article-content.summary .content {
     font-size: 1rem;
   }
 
@@ -594,10 +528,6 @@
 
   .article .author:not(:last-child)::after {
     content: "";
-  }
-
-  .article .article-content.featured .featured-image img {
-    max-height: 250px;
   }
 
   .article .article-content.hero {
@@ -646,10 +576,6 @@
   .article .article-content.main .title,
   .article .article-content.summary .title {
     font-size: 1.3rem;
-  }
-
-  .article .article-content.featured .title {
-    font-size: 1.75rem;
   }
 
   .article .article-content.hero .title,
