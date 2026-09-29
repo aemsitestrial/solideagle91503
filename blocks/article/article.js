@@ -7,47 +7,221 @@ const escapeHtml = (value = '') => String(value)
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#39;');
 
+const DISPLAY_FIELDS = [
+  'title',
+  'author',
+  'publicationdate',
+  'content',
+  'featuredimage',
+];
+
 function getFallbackArticle(block) {
-  const title = block.querySelector('h1, h2, h3, h4, h5')?.textContent?.trim() || 'Article';
-  const description = block.querySelector('p')?.textContent?.trim()
+  const title = block.querySelector('h1, h2, h3, h4, h5')
+    ?.textContent?.trim()
+    || 'Article';
+
+  const description = block.querySelector('p')
+    ?.textContent?.trim()
     || 'Article content is available in the authored document.';
 
   return {
     title,
+    author: '',
+    date: '',
     content: {
       plaintext: description,
     },
   };
 }
 
-/* eslint-disable no-underscore-dangle */
+function getSummary(text = '', limit = 150) {
+  if (text.length <= limit) {
+    return text;
+  }
+
+  return `${text.substring(0, limit)}...`;
+}
+
+function getFieldValue(block, index) {
+  return block.querySelector(`:scope > div:nth-child(${index}) > div`)
+    ?.textContent?.trim()
+    || '';
+}
+
+function getSafeClass(value, fallback) {
+  return /^[a-z]+$/i.test(value || '')
+    ? value.toLowerCase()
+    : fallback;
+}
+
+function getPathField(value) {
+  // eslint-disable-next-line dot-notation
+  return value?.['_path'] || '';
+}
+
+function normalizeArticlePath(value = '') {
+  const trimmedValue = String(value || '').trim();
+
+  if (!trimmedValue) {
+    return '';
+  }
+
+  try {
+    const normalizedPath = /^https?:\/\//i.test(trimmedValue)
+      ? new URL(trimmedValue, window.location.origin).pathname
+      : trimmedValue;
+
+    return normalizedPath.replace(/\.html$/, '');
+  } catch (error) {
+    return trimmedValue.replace(/\.html$/, '');
+  }
+}
+
+function getSelectedFields(block) {
+  const fieldsContainer = block.querySelector(':scope > div:nth-child(4)');
+
+  if (!fieldsContainer) {
+    return [...DISPLAY_FIELDS];
+  }
+
+  const checkedValues = [...fieldsContainer.querySelectorAll('input[type="checkbox"]')]
+    .map((input) => (input.checked ? input.value : ''))
+    .filter(Boolean)
+    .map((field) => field.trim().toLowerCase());
+
+  const textValue = fieldsContainer.textContent?.trim() || '';
+  const textValues = textValue
+    ? textValue
+      .split(/[\s,;\n]+/)
+      .map((field) => field.trim().toLowerCase())
+      .filter(Boolean)
+    : [];
+
+  const selectedValues = checkedValues.length ? checkedValues : textValues;
+  const fields = selectedValues.filter((field) => DISPLAY_FIELDS.includes(field));
+
+  return fields.length ? [...new Set(fields)] : [...DISPLAY_FIELDS];
+}
+
+const EXCERPT_VARIATIONS = ['summary', 'spotlight'];
+
+function getImageSource(article = {}) {
+  const source = [article.featuredImage, article.image]
+    .map((image) => (typeof image === 'string' ? image : getPathField(image) || image?.path))
+    .find((value) => typeof value === 'string' && value.trim());
+
+  return source ? source.trim() : '';
+}
+
+function renderArticle({
+  article,
+  variation,
+  alignment,
+  showField,
+  itemId = '',
+}) {
+  const aue = (prop, label, type) => (itemId
+    ? ` data-aue-prop="${prop}" data-aue-label="${label}" data-aue-type="${type}"`
+    : '');
+
+  const {
+    title, author, date, content, image,
+  } = article;
+
+  const showImage = showField('featuredimage') && image;
+  const showAuthor = showField('author') && author;
+  const showDate = showField('publicationdate') && date;
+
+  const imageMarkup = showImage
+    ? `<div class="featured-image">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy">
+      </div>`
+    : '';
+
+  const titleMarkup = showField('title') && title
+    ? `<h4 class="title"${aue('title', 'title', 'text')}>${escapeHtml(title)}</h4>`
+    : '';
+
+  const metaMarkup = showAuthor || showDate
+    ? `<div class="article-meta">
+        ${showAuthor ? `<span class="author"${aue('author', 'author', 'text')}>${escapeHtml(author)}</span>` : ''}
+        ${showDate ? `<span class="publication-date"${aue('date', 'date', 'text')}>${escapeHtml(date)}</span>` : ''}
+      </div>`
+    : '';
+
+  const contentMarkup = showField('content') && content
+    ? `<p class="content"${aue('content', 'content', 'richtext')}>${escapeHtml(content)}</p>`
+    : '';
+
+  const resourceAttrs = itemId
+    ? ` data-aue-resource="${escapeHtml(itemId)}" data-aue-label="article content fragment" data-aue-type="reference" data-aue-filter="cf"`
+    : '';
+
+  return `
+    <div class="article-content ${variation} ${alignment} ${showImage ? 'has-image' : 'no-image'}"${resourceAttrs}>
+      <div class="article-wrapper">
+        ${imageMarkup}
+        <div class="article-body">
+          ${titleMarkup}
+          ${metaMarkup}
+          ${contentMarkup}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export default async function decorate(block) {
   const aempublishurl = getAEMPublish();
   const aemauthorurl = getAEMAuthor();
+
   const persistedquery = '/graphql/execute.json/aem-boilerplate-frescopa/ArticleByPath';
+
   const sourceLink = block.querySelector('a[href]');
+
+  const authoredArticlePath = normalizeArticlePath(getFieldValue(block, 1));
+
   const rawArticlePath = sourceLink
     ? new URL(sourceLink.href, window.location.origin).pathname
-    : '';
-  const articlepath = (rawArticlePath || block.dataset?.path || '').replace(/\.html$/, '');
-  const variationname = block.querySelector(':scope div:nth-child(2) > div')?.textContent?.trim() || 'main';
+    : authoredArticlePath;
+
+  const articlepath = normalizeArticlePath(
+    rawArticlePath
+    || block.dataset?.path
+    || '',
+  );
+
+  const variationname = getSafeClass(
+    getFieldValue(block, 2),
+    'main',
+  );
+
+  const alignment = getSafeClass(
+    getFieldValue(block, 3),
+    'left',
+  );
+
+  const selectedFields = getSelectedFields(block);
+
+  const showField = (field) => selectedFields.includes(field);
 
   if (!articlepath || (!aempublishurl && !aemauthorurl)) {
     const fallback = getFallbackArticle(block);
-    block.innerHTML = `
-      <div class='article-content' data-aue-type='text'>
-        <div>
-          <h4 class='title'>${escapeHtml(fallback.title)}</h4>
-          <p class='content'>${escapeHtml(fallback.content.plaintext)}</p>
-        </div>
-      </div>
-    `;
+
+    block.innerHTML = renderArticle({
+      article: {
+        title: fallback.title,
+        content: fallback.content.plaintext,
+      },
+      variation: variationname,
+      alignment,
+      showField,
+    });
+
     return;
   }
 
-  const baseUrl = window.location
-    && window.location.origin
-    && window.location.origin.includes('author')
+  const baseUrl = window.location.origin.includes('author')
     ? aemauthorurl
     : aempublishurl;
 
@@ -56,40 +230,44 @@ export default async function decorate(block) {
   let cfReq = getFallbackArticle(block);
 
   try {
-    console.log('Article Path:', articlepath);
-    console.log('Variation:', variationname);
-    console.log('Fetch URL:', url);
-
     const response = await fetch(url, {
       credentials: 'include',
     });
 
-    console.log('Response Status:', response.status);
+    if (response.ok) {
+      const contentfragment = await response.json();
+      const item = contentfragment?.data?.articleByPath?.item;
 
-    const contentfragment = await response.json();
-
-    console.log('GraphQL Response:', contentfragment);
-
-    const item = contentfragment?.data?.articleByPath?.item;
-
-    if (item) {
-      cfReq = item;
-      console.log('CF Item:', cfReq);
-    } else {
-      console.warn('No item returned from GraphQL');
+      if (item) {
+        cfReq = item;
+      }
     }
   } catch (error) {
-    console.error('Content Fragment Fetch Error:', error);
+    // fallback already prepared
   }
 
-  const itemId = `urn:aemconnection:${articlepath}/jcr:content/data/${variationname}`;
+  const title = cfReq.title || 'Title';
+  const author = cfReq.author || 'Author';
+  const publicationDate = cfReq.date
+    || cfReq.publicationDate
+    || 'Date';
+  const content = cfReq.content?.plaintext || 'content';
 
-  block.innerHTML = `
-    <div class='article-content' data-aue-resource="${itemId}" data-aue-label="article content fragment" data-aue-type="reference" data-aue-filter="cf">
-      <div>
-        <h4 data-aue-prop="title" data-aue-label="title" data-aue-type="text" class='title'>${escapeHtml(cfReq.title || 'Article')}</h4>
-        <p data-aue-prop="content" data-aue-label="content" data-aue-type="richtext" class='content'>${escapeHtml(cfReq.content?.plaintext || cfReq.content || 'Article content is available in the authored document.')}</p>
-      </div>
-    </div>
-  `;
+  const renderedContent = EXCERPT_VARIATIONS.includes(variationname)
+    ? getSummary(content, 150)
+    : content;
+
+  block.innerHTML = renderArticle({
+    article: {
+      title,
+      author,
+      date: publicationDate,
+      content: renderedContent,
+      image: getImageSource(cfReq),
+    },
+    variation: variationname,
+    alignment,
+    showField,
+    itemId: `urn:aemconnection:${articlepath}/jcr:content/data/${variationname}`,
+  });
 }
