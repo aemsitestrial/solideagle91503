@@ -10,7 +10,7 @@ const escapeHtml = (value = '') => String(value)
 const DISPLAY_FIELDS = [
   'title',
   'author',
-  'publicationdate',
+  'publicationDate',
   'content',
   'featuredimage',
 ];
@@ -130,7 +130,7 @@ function renderArticle({
 
   const showImage = showField('featuredimage') && image;
   const showAuthor = showField('author') && author;
-  const showDate = showField('publicationdate') && date;
+  const showDate = showField('publicationDate') && date;
 
   const imageMarkup = showImage
     ? `<div class="featured-image">
