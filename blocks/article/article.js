@@ -12,7 +12,7 @@ const DISPLAY_FIELDS = [
   'author',
   'publicationDate',
   'content',
-  'featuredimage',
+  'featuredImage',
 ];
 
 function getFallbackArticle(block) {
@@ -128,7 +128,7 @@ function renderArticle({
     title, author, date, content, image,
   } = article;
 
-  const showImage = showField('featuredimage') && image;
+  const showImage = showField('featuredImage') && image;
   const showAuthor = showField('author') && author;
   const showDate = showField('publicationDate') && date;
 
@@ -175,7 +175,7 @@ export default async function decorate(block) {
   const aempublishurl = getAEMPublish();
   const aemauthorurl = getAEMAuthor();
 
-  const persistedquery = '/graphql/execute.json/tcsdemopartnersandboxprogram/ArticleByPath';
+  const persistedquery = '/graphql/execute.json/aem-boilerplate-frescopa/ArticleByPath';
 
   const sourceLink = block.querySelector('a[href]');
 
