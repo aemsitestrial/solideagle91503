@@ -62,7 +62,9 @@
       "text",
       "image",
       "button",
-      "title"
+      "title",
+      "quote",
+      "demo-card-column-item"
     ]
   },
   {
@@ -123,6 +125,27 @@
     "id": "tabs",
     "components": [
       "tabs-item"
+    ]
+  },
+  {
+    "id": "title-with-column",
+    "components": [
+      "column"
+    ]
+  },
+  {
+    "id": "column",
+    "components": [
+      "title",
+      "text",
+      "cta",
+      "topic-list"
+    ]
+  },
+  {
+    "id": "topic-list",
+    "components": [
+      "topic-list-cta"
     ]
   },
   {
