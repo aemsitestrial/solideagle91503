@@ -58,13 +58,18 @@
         "hero",
         "image",
         "quote",
+        "cta",
+        "columns",
         "search",
         "tabs",
         "table",
         "text",
         "title",
 	"teaser",
-        "video"
+        "video",
+        "testimonial",
+        "title-with-column",
+        "topic-list"
       ]
     }
   ]

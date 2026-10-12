@@ -6469,6 +6469,49 @@
     ]
   },
   {
+    "id": "testimonial",
+    "fields": [
+      {
+        "component": "checkbox",
+        "name": "showEyebrow",
+        "label": "Show Top Text",
+        "valueType": "boolean",
+        "value": true
+      },
+      {
+        "component": "richtext",
+        "name": "eyebrow",
+        "label": "Top Text",
+        "valueType": "string",
+        "value": "",
+        "filter": "richtext"
+      },
+      {
+        "component": "richtext",
+        "name": "quotation",
+        "label": "Quote",
+        "valueType": "string",
+        "value": "",
+        "filter": "richtext"
+      },
+      {
+        "component": "checkbox",
+        "name": "showAttribution",
+        "label": "Show Attribution",
+        "valueType": "boolean",
+        "value": true
+      },
+      {
+        "component": "richtext",
+        "name": "attribution",
+        "label": "Attribution",
+        "valueType": "string",
+        "value": "",
+        "filter": "richtext"
+      }
+    ]
+  },
+  {
     "id": "title-with-column",
     "fields": [
       {

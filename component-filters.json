@@ -23,13 +23,18 @@
       "hero",
       "image",
       "quote",
+      "cta",
+      "columns",
       "search",
       "tabs",
       "table",
       "text",
       "title",
       "teaser",
-      "video"
+      "video",
+      "testimonial",
+      "title-with-column",
+      "topic-list"
     ]
   },
   {
@@ -126,6 +131,17 @@
     "components": [
       "tabs-item"
     ]
+  },
+  {
+    "id": "richtext",
+    "components": [
+      "richtext"
+    ],
+    "rte": {
+      "toolbar": {
+        "format": []
+      }
+    }
   },
   {
     "id": "title-with-column",
